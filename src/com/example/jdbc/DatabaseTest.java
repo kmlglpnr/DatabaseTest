@@ -1,8 +1,7 @@
 package com.example.jdbc;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.sql.SQLException;
 import java.util.Properties;
 
 public class DatabaseTest {
@@ -30,10 +29,13 @@ public class DatabaseTest {
     public void writeProperties() throws IOException {
         // TODO - write properties to  project.properties file
         Properties prop = new Properties();
-        prop.setProperty(DB_URL, "localhost");
+        prop.setProperty(DB_URL, "jdbc:derby:test.db;create=true");
+        prop.setProperty(DB_USER, "jsmith");
+        prop.setProperty(DB_PASSWORD, "pwd");
 
-
-
+        try(OutputStream out = new FileOutputStream("db.properties")){
+            prop.store(out, "Database Properties File");
+        }
 
     }
 
@@ -41,14 +43,23 @@ public class DatabaseTest {
         try(
                 InputStream in = new FileInputStream(DB_PROPERTIES)
         ) {
-            Properties prop = new Properties();
-            prop.load(in);
             globalProps = new Properties();
             globalProps.load(in);
+            System.out.println(globalProps.getProperty(DB_USER));
         }
     }
 
     public static void main(String[] args) {
+        DBUtility du = new DBUtility();
+
+        try {
+            du.testConnection();
+        } catch (IOException | SQLException e){
+            e.printStackTrace();
+        }
+
+
+
 
 
     }
